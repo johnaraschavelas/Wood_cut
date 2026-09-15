@@ -236,6 +236,11 @@ body {
 }
 .btn-calc:active { opacity: 0.85; }
 
+.btn-print {
+  background: var(--success);
+  margin-top: 14px;
+}
+
 .results-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -317,6 +322,74 @@ body {
 .wall-item .val { font-weight: 600; color: var(--text); }
 
 .hidden { display: none !important; }
+
+/* ════ Modal Edit & Print ════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  z-index: 9000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 15px;
+  overflow-y: auto;
+}
+.modal-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 750px;
+  padding: 18px;
+  margin-top: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+.modal-header h2 { font-size: 18px; color: var(--text); }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: var(--text2);
+  cursor: pointer;
+}
+.note-input {
+  width: 100%;
+  height: 36px;
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Print CSS Rules */
+@media print {
+  body * { visibility: hidden; }
+  #print-modal, #print-modal * { visibility: visible; }
+  #print-modal {
+    position: absolute;
+    left: 0; top: 0; width: 100%;
+    background: #fff !important;
+    color: #000 !important;
+    padding: 0; margin: 0;
+  }
+  .modal-overlay { background: none; position: static; backdrop-filter: none; padding: 0; }
+  .modal-container { box-shadow: none; border: none; max-width: 100%; padding: 0; }
+  .modal-close, .btn-calc, .app-header, .tabs-bar { display: none !important; }
+  .note-input { border: none; background: transparent; padding: 0; font-size: 12px; }
+  .cut-table th, .cut-table td { border-bottom: 1px solid #ccc !important; color: #000 !important; }
+}
 
 #pin-overlay {
   position: fixed;
@@ -650,6 +723,10 @@ body {
     </div>
 
     <div id="door-warn" class="warn-box hidden"></div>
+
+    <button class="btn-calc btn-print" onclick="openPrintModal()">
+      🖨️ Επεξεργασία & Εκτύπωση
+    </button>
   </div>
 
 </div>
@@ -798,8 +875,56 @@ body {
     </div>
     <div id="wall-summary" class="summary-box hidden"></div>
     <div id="wall-warn" class="warn-box hidden"></div>
+
+    <button class="btn-calc btn-print" onclick="openPrintModal()">
+      🖨️ Επεξεργασία & Εκτύπωση
+    </button>
   </div>
 
+</div>
+
+<!-- ════ Modal Επεξεργασίας & Εκτύπωσης ════ -->
+<div id="print-modal" class="modal-overlay hidden">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h2>Λίστα Κοπών — Επεξεργασία & Εκτύπωση</h2>
+      <button class="modal-close" onclick="closePrintModal()">✕</button>
+    </div>
+
+    <div class="results-card">
+      <div class="results-header">1. Αναλυτική Λίστα (με Παρατηρήσεις)</div>
+      <table class="cut-table">
+        <thead>
+          <tr>
+            <th>Τεμάχιο</th>
+            <th>Μήκος</th>
+            <th>Ύψος</th>
+            <th>Ποσ.</th>
+            <th>Παρατηρήσεις (έως 100 χαρ.)</th>
+          </tr>
+        </thead>
+        <tbody id="modal-detailed-body"></tbody>
+      </table>
+    </div>
+
+    <div class="results-card" style="margin-top: 15px;">
+      <div class="results-header">2. Συγκεντρωτική Λίστα (Σύνολο Όμοιων Κομματιών)</div>
+      <table class="cut-table">
+        <thead>
+          <tr>
+            <th>Διαστάσεις (Μήκος × Ύψος)</th>
+            <th>Συνολικά Τεμάχια</th>
+            <th>Τεμάχια που περιλαμβάνονται</th>
+          </tr>
+        </thead>
+        <tbody id="modal-aggregated-body"></tbody>
+      </table>
+    </div>
+
+    <button class="btn-calc btn-print" onclick="window.print()">
+      🖨️ Εκτύπωση
+    </button>
+  </div>
 </div>
 
 <!-- ════ PIN Lock Overlay ════ -->
@@ -899,9 +1024,17 @@ let thickness = 18;
 let backType = '3mm';
 let wallJointType = 'top';
 
+// Αποθήκευση λίστας κοπών για το modal
+let currentCutList = [];
+
 const $ = id => document.getElementById(id);
 const val = id => parseFloat($(id).value) || 0;
 const intVal = id => parseInt($(id).value) || 0;
+
+function addCutItem(name, l, h, qty) {
+  currentCutList.push({ name, l, h, qty, note: '' });
+  return row(name, l, h, qty);
+}
 
 function row(name, l, h, qty) {
   return `<tr>
@@ -982,6 +1115,7 @@ function validateSingle() {
 
 function calculate() {
   if (!validateSingle()) return;
+  currentCutList = [];
 
   const W = val('dim-w'), H = val('dim-h'), D = val('dim-d');
   const t = thickness;
@@ -1014,14 +1148,14 @@ function calculate() {
   }
 
   let body = '';
-  body += row('Πάνελ πάνω', topW, topD, 1);
-  body += row('Πάνελ κάτω', botW, botD, 1);
-  body += row('Πλαϊνό αριστερά', lW, lH, 1);
-  body += row('Πλαϊνό δεξιά', rW, rH, 1);
+  body += addCutItem('Πάνελ πάνω', topW, topD, 1);
+  body += addCutItem('Πάνελ κάτω', botW, botD, 1);
+  body += addCutItem('Πλαϊνό αριστερά', lW, lH, 1);
+  body += addCutItem('Πλαϊνό δεξιά', rW, rH, 1);
   if (boxType === 'open') {
-    body += row('Ράφι (εσωτερικό)', inW, D - t, 1);
+    body += addCutItem('Ράφι (εσωτερικό)', inW, D - t, 1);
   }
-  body += row(backLabel, backW_cut, backH_cut, 1);
+  body += addCutItem(backLabel, backW_cut, backH_cut, 1);
 
   $('result-body').innerHTML = body;
 
@@ -1051,7 +1185,6 @@ function calculate() {
     const availH = inH - totalGaps;
     const dH = Math.floor(availH / cnt);
 
-    // Ύψος εσωτερικού κουτιού (αν οριστεί από τον χρήστη, αλλιώς αυτόματο dH)
     const boxH = (customBoxH > 0) ? customBoxH : dH;
 
     let dD = val('drawer-depth');
@@ -1082,10 +1215,10 @@ function calculate() {
     }
 
     let drawerBody = '';
-    drawerBody += row('Μπροστινό πρόσωπο συρταριού (Φατνίο)', frontW, frontH, cnt);
-    drawerBody += row('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, boxH, cnt * 2);
-    drawerBody += row('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, boxH, cnt * 2);
-    drawerBody += row(botLabel, botW_cut, botD_cut, cnt);
+    drawerBody += addCutItem('Μπροστινό(Φάτσα) συρταριού', frontW, frontH, cnt);
+    drawerBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, boxH, cnt * 2);
+    drawerBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, boxH, cnt * 2);
+    drawerBody += addCutItem(botLabel, botW_cut, botD_cut, cnt);
 
     $('drawer-result-body').innerHTML = drawerBody;
 
@@ -1108,7 +1241,7 @@ function calculate() {
     const gFrame = val('door-gap-frame') || 2;
     const dW = inW - 2 * gFrame;
     const dH2 = inH - 2 * gFrame;
-    $('door-result-body').innerHTML = row('Πόρτα', dW, dH2, 1);
+    $('door-result-body').innerHTML = addCutItem('Πόρτα', dW, dH2, 1);
     show('door-results-card');
     hide('drawer-results-card');
     hide('drawer-summary');
@@ -1118,7 +1251,7 @@ function calculate() {
     const gCenter = val('door-gap-center') || 3;
     const dW = Math.floor((inW - 2 * gFrame - gCenter) / 2);
     const dH2 = inH - 2 * gFrame;
-    let doorBody = row('Πόρτα (κάθε μία από 2)', dW, dH2, 2);
+    let doorBody = addCutItem('Πόρτα (κάθε μία από 2)', dW, dH2, 2);
     $('door-result-body').innerHTML = doorBody;
     $('door-warn').innerHTML = `<p>↔ Αέρας ανάμεσα σε πόρτες: <strong>${gCenter}mm</strong></p>`;
     show('door-results-card');
@@ -1145,6 +1278,7 @@ function calculateWall() {
   const wBackType = $('wall-back-type').value;
 
   if (!W || !H || !D || !unitW) return;
+  currentCutList = [];
 
   const n = Math.floor((W + gap) / (unitW + gap));
   const usedW = n * unitW + (n > 1 ? (n - 1) * gap : 0);
@@ -1183,17 +1317,17 @@ function calculateWall() {
   }
 
   let cutsBody = '';
-  cutsBody += row('Πάνελ πάνω', unitW, topD_cut, 1);
-  cutsBody += row('Πάνελ κάτω', unitW, topD_cut, 1);
-  cutsBody += row('Πλαϊνό', D, sideH_cut, 2);
-  cutsBody += row(backLabel, backW_cut, backH_cut, 1);
+  cutsBody += addCutItem('Πάνελ πάνω', unitW, topD_cut, 1 * n);
+  cutsBody += addCutItem('Πάνελ κάτω', unitW, topD_cut, 1 * n);
+  cutsBody += addCutItem('Πλαϊνό', D, sideH_cut, 2 * n);
+  cutsBody += addCutItem(backLabel, backW_cut, backH_cut, 1 * n);
 
   if (wbt === 'door1') {
     const dW = inW - 4, dH = inH - 4;
-    cutsBody += row('Πόρτα (1 πόρτα)', dW, dH, 1);
+    cutsBody += addCutItem('Πόρτα (1 πόρτα)', dW, dH, 1 * n);
   } else if (wbt === 'door2') {
     const dW = Math.floor((inW - 3 - 4) / 2), dH = inH - 4;
-    cutsBody += row('Πόρτα (κάθε μία / 2 πόρτες)', dW, dH, 2);
+    cutsBody += addCutItem('Πόρτα (κάθε μία / 2 πόρτες)', dW, dH, 2 * n);
   } else if (wbt === 'drawer') {
     const cnt = intVal('wall-drawer-count') || 3;
     const guideType = $('wall-guide-type').value;
@@ -1220,10 +1354,10 @@ function calculateWall() {
       botLabel = `Πάτος συρταριού (3mm — Καρφωτός -3mm)`;
     }
 
-    cutsBody += row('Μπροστινό πρόσωπο συρταριού (Φατνίο)', inW - 2, dH, cnt);
-    cutsBody += row('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, dH, cnt * 2);
-    cutsBody += row('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, dH, cnt * 2);
-    cutsBody += row(botLabel, botW_cut, botD_cut, cnt);
+    cutsBody += addCutItem('Μπροστινό(Φάτσα) συρταριού', inW - 2, dH, cnt * n);
+    cutsBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, dH, cnt * 2 * n);
+    cutsBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, dH, cnt * 2 * n);
+    cutsBody += addCutItem(botLabel, botW_cut, botD_cut, cnt * n);
   }
 
   $('wall-cuts-body').innerHTML = cutsBody;
@@ -1244,6 +1378,57 @@ function calculateWall() {
 
   show('wall-results');
   setTimeout(() => $('wall-results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+// ── Functions for Edit & Print Modal ──
+function openPrintModal() {
+  if (!currentCutList.length) return;
+
+  // 1. Γέμισμα Αναλυτικής Λίστας
+  let detailedHTML = '';
+  currentCutList.forEach((item, index) => {
+    detailedHTML += `<tr>
+      <td>${item.name}</td>
+      <td><span class="dim">${item.l}</span></td>
+      <td><span class="dim">${item.h}</span></td>
+      <td><span class="qty-badge">${item.qty}×</span></td>
+      <td>
+        <input type="text" class="note-input" maxlength="100" placeholder="Προσθέστε σημείωση..." 
+               value="${item.note || ''}" onchange="currentCutList[${index}].note = this.value">
+      </td>
+    </tr>`;
+  });
+  $('modal-detailed-body').innerHTML = detailedHTML;
+
+  // 2. Γέμισμα Συγκεντρωτικής Λίστας (Ομαδοποίηση κατά διαστάσεις: Μήκος × Ύψος)
+  const aggregatedMap = {};
+  currentCutList.forEach(item => {
+    const key = `${item.l} × ${item.h}`;
+    if (!aggregatedMap[key]) {
+      aggregatedMap[key] = { totalQty: 0, items: [] };
+    }
+    aggregatedMap[key].totalQty += item.qty;
+    if (!aggregatedMap[key].items.includes(item.name)) {
+      aggregatedMap[key].items.push(item.name);
+    }
+  });
+
+  let aggregatedHTML = '';
+  Object.keys(aggregatedMap).forEach(key => {
+    const data = aggregatedMap[key];
+    aggregatedHTML += `<tr>
+      <td><span class="dim">${key} mm</span></td>
+      <td><span class="qty-badge" style="background:var(--success-bg); color:var(--success); border-color:var(--success-border);">${data.totalQty}×</span></td>
+      <td>${data.items.join(', ')}</td>
+    </tr>`;
+  });
+  $('modal-aggregated-body').innerHTML = aggregatedHTML;
+
+  show('print-modal');
+}
+
+function closePrintModal() {
+  hide('print-modal');
 }
 
 let deferredPrompt;
