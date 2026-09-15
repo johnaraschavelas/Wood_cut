@@ -525,13 +525,23 @@ body {
 
   <!-- Πάχος -->
   <div class="card">
-    <div class="card-title">Πάχος μελαμίνης</div>
+    <div class="card-title">Πάχος μελαμίνης κουτιού</div>
     <div class="chip-row" id="thickness-group">
       <button class="chip" onclick="setThickness(16,this)">16mm</button>
       <button class="chip active" onclick="setThickness(18,this)">18mm</button>
       <button class="chip" onclick="setThickness(25,this)">25mm</button>
       <button class="chip" onclick="setThickness(30,this)">30mm</button>
       <button class="chip" onclick="setThickness(36,this)">36mm</button>
+    </div>
+  </div>
+
+  <!-- Πλάτη Κουτιού -->
+  <div class="card">
+    <div class="card-title">Πλάτη κουτιού</div>
+    <div class="chip-row" id="back-type-group">
+      <button class="chip active" onclick="setBackType('3mm',this)">3mm (Καρφωτή)</button>
+      <button class="chip" onclick="setBackType('8mm',this)">8mm (Καρφωτή)</button>
+      <button class="chip" onclick="setBackType('same',this)">Ίδιο με μελαμίνη κουτιού (Βιδωτή)</button>
     </div>
   </div>
 
@@ -543,18 +553,12 @@ body {
       <!-- TOP overrides sides -->
       <div class="joint-card active" onclick="setJoint('top',this)">
         <svg width="90" height="68" viewBox="0 0 90 68">
-          <!-- top panel -->
           <rect x="6" y="4" width="78" height="10" rx="2" fill="var(--accent)" opacity="0.85"/>
-          <!-- bottom panel -->
           <rect x="6" y="54" width="78" height="10" rx="2" fill="var(--accent)" opacity="0.85"/>
-          <!-- left side (shorter, inside) -->
           <rect x="6" y="14" width="10" height="40" rx="2" fill="var(--border-strong)"/>
-          <!-- right side (shorter, inside) -->
           <rect x="74" y="14" width="10" height="40" rx="2" fill="var(--border-strong)"/>
-          <!-- screws on top -->
           <circle cx="28" cy="9" r="2.5" fill="white" opacity="0.9"/>
           <circle cx="62" cy="9" r="2.5" fill="white" opacity="0.9"/>
-          <!-- screws on bottom -->
           <circle cx="28" cy="59" r="2.5" fill="white" opacity="0.9"/>
           <circle cx="62" cy="59" r="2.5" fill="white" opacity="0.9"/>
         </svg>
@@ -564,15 +568,10 @@ body {
       <!-- SIDE overrides top/bottom -->
       <div class="joint-card" onclick="setJoint('side',this)">
         <svg width="90" height="68" viewBox="0 0 90 68">
-          <!-- left side (full height) -->
           <rect x="6" y="4" width="10" height="60" rx="2" fill="var(--accent)" opacity="0.85"/>
-          <!-- right side (full height) -->
           <rect x="74" y="4" width="10" height="60" rx="2" fill="var(--accent)" opacity="0.85"/>
-          <!-- top panel (shorter, inside) -->
           <rect x="16" y="4" width="58" height="10" rx="2" fill="var(--border-strong)"/>
-          <!-- bottom panel (shorter, inside) -->
           <rect x="16" y="54" width="58" height="10" rx="2" fill="var(--border-strong)"/>
-          <!-- screws on sides -->
           <circle cx="11" cy="22" r="2.5" fill="white" opacity="0.9"/>
           <circle cx="11" cy="46" r="2.5" fill="white" opacity="0.9"/>
           <circle cx="79" cy="22" r="2.5" fill="white" opacity="0.9"/>
@@ -622,7 +621,7 @@ body {
       </div>
     </div>
 
-    <div class="input-grid cols3">
+    <div class="input-grid cols3" style="margin-bottom:10px">
       <div class="field">
         <label>Αέρας πάνω (mm)</label>
         <input type="number" id="drawer-gap-top" value="5" min="0" max="50" inputmode="numeric">
@@ -636,6 +635,17 @@ body {
         <select id="drawer-front-type">
           <option value="overlay">Επικαλυπτικό</option>
           <option value="inset">Εσοχή</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-grid cols2">
+      <div class="field">
+        <label>Πάτος συρταριού</label>
+        <select id="drawer-bottom-type">
+          <option value="3mm" selected>3mm (Καρφωτός -3mm)</option>
+          <option value="8mm">8mm (Καρφωτός -3mm)</option>
+          <option value="same">Ίδιο με μελαμίνη κουτιού (Βιδωτός)</option>
         </select>
       </div>
     </div>
@@ -764,7 +774,7 @@ body {
         <input type="number" id="wall-gap" value="1" min="0" max="30" inputmode="numeric">
       </div>
     </div>
-    <div class="input-grid cols2">
+    <div class="input-grid cols2" style="margin-bottom:10px">
       <div class="field">
         <label>Πάχος μελαμίνης</label>
         <select id="wall-thickness">
@@ -782,6 +792,16 @@ body {
           <option value="door1">Ντουλάπι — 1 πόρτα</option>
           <option value="door2">Ντουλάπι — 2 πόρτες</option>
           <option value="drawer">Συρταριέρα</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-grid cols2">
+      <div class="field">
+        <label>Πλάτη κουτιού</label>
+        <select id="wall-back-type">
+          <option value="3mm" selected>3mm (Καρφωτή)</option>
+          <option value="8mm">8mm (Καρφωτή)</option>
+          <option value="same">Ίδιο με μελαμίνη κουτιού (Βιδωτή)</option>
         </select>
       </div>
     </div>
@@ -821,7 +841,7 @@ body {
 
   <div class="card hidden" id="wall-drawer-opts">
     <div class="card-title">Ρυθμίσεις συρταριέρας (ανά ντουλάπι)</div>
-    <div class="input-grid cols3">
+    <div class="input-grid cols3" style="margin-bottom:10px">
       <div class="field">
         <label>Αρ. συρταριών</label>
         <input type="number" id="wall-drawer-count" value="3" min="1" max="12" inputmode="numeric">
@@ -836,6 +856,16 @@ body {
       <div class="field">
         <label>Πάχος οδηγού (mm)</label>
         <input type="number" id="wall-guide-thickness" value="12" min="0" max="50" inputmode="numeric">
+      </div>
+    </div>
+    <div class="input-grid cols2">
+      <div class="field">
+        <label>Πάτος συρταριού</label>
+        <select id="wall-drawer-bottom-type">
+          <option value="3mm" selected>3mm (Καρφωτός)</option>
+          <option value="8mm">8mm (Καρφωτός)</option>
+          <option value="same">Ίδιο με μελαμίνη κουτιού</option>
+        </select>
       </div>
     </div>
   </div>
@@ -913,7 +943,7 @@ body {
 <script>
 // ════════════════════════════════════════
 // ▶▶ ΕΔΩ ΟΡΙΖΕΙΣ ΤΟ PIN σου (4 ψηφία) ◀◀
-const APP_PIN = '1234';
+const APP_PIN = '2580';
 // ════════════════════════════════════════
 
 // ── PIN Logic ──────────────────────────
@@ -969,6 +999,7 @@ document.addEventListener('keydown', e => {
 let boxType = 'open';
 let jointType = 'top';
 let thickness = 18;
+let backType = '3mm';
 let wallJointType = 'top';
 
 // ── Helpers ────────────────────────────
@@ -1014,6 +1045,13 @@ function setBoxType(v, el) {
 function setThickness(v, el) {
   thickness = v;
   document.querySelectorAll('#thickness-group .chip').forEach(c => c.className = 'chip');
+  el.className = 'chip active';
+}
+
+// ── Backing Type ───────────────────────
+function setBackType(v, el) {
+  backType = v;
+  document.querySelectorAll('#back-type-group .chip').forEach(c => c.className = 'chip');
   el.className = 'chip active';
 }
 
@@ -1068,7 +1106,7 @@ function calculate() {
     // top/bottom full width, sides shorter
     topW = W; topD = D;
     botW = W; botD = D;
-    lH = H - 2 * t; lW = D; // lW = depth
+    lH = H - 2 * t; lW = D;
     rH = H - 2 * t; rW = D;
   } else {
     // sides full height, top/bottom shorter width
@@ -1078,10 +1116,20 @@ function calculate() {
     rH = H; rW = D;
   }
 
-  const backW = W - 2 * t;
-  const backH = H - 2 * t;
   const inW = W - 2 * t;
   const inH = H - 2 * t;
+
+  // Υπολογισμός Πλάτης Κουτιού
+  let backW_cut, backH_cut, backLabel;
+  if (backType === 'same') {
+    backW_cut = W;
+    backH_cut = H;
+    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή)`;
+  } else {
+    backW_cut = W - 3;
+    backH_cut = H - 3;
+    backLabel = `Πλάτη (${backType} — Καρφωτή)`;
+  }
 
   let body = '';
   body += row('Πάνελ πάνω', topW, topD, 1);
@@ -1091,14 +1139,14 @@ function calculate() {
   if (boxType === 'open') {
     body += row('Ράφι (εσωτερικό)', inW, D - t, 1);
   }
-  body += row('Πλάτη (back)', backW, backH, 1);
+  body += row(backLabel, backW_cut, backH_cut, 1);
 
   $('result-body').innerHTML = body;
 
   const sumHTML = `
     <p class="big">📐 Εσωτερικές διαστάσεις κουτιού</p>
     <p>Πλάτος: <strong>${inW} mm</strong> &nbsp;|&nbsp; Ύψος: <strong>${inH} mm</strong> &nbsp;|&nbsp; Βάθος: <strong>${D} mm</strong></p>
-    <p>Πάχος μελαμίνης: <strong>${t} mm</strong> &nbsp;|&nbsp; Σύνδεση: <strong>${jointType === 'top' ? 'Πάνω/Κάτω over' : 'Πλαϊνά over'}</strong></p>`;
+    <p>Πάχος μελαμίνης: <strong>${t} mm</strong> &nbsp;|&nbsp; Σύνδεση: <strong>${jointType === 'top' ? 'Πάνω/Κάτω over' : 'Πλαϊνά over'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${backType === 'same' ? 'Μελαμίνη ' + t + 'mm (Εξωτερική βιδωτή)' : backType + ' (Καρφωτή -3mm)'}</strong></p>`;
   $('summary-box').innerHTML = sumHTML;
   show('summary-box');
 
@@ -1112,37 +1160,48 @@ function calculate() {
     const gBetween = val('drawer-gap-between');
     const gTop = val('drawer-gap-top');
     const frontType = $('drawer-front-type').value;
+    const drawerBottomType = $('drawer-bottom-type').value;
 
-    // Drawer inner width: subtract guide×2 if side guide
-    const dInW = guideType === 'side' ? inW - 2 * guideTh : inW;
-    // Drawer height: total inner height minus all gaps divided by count
+    // Συνολικό εξωτερικό πλάτος συρταριού
+    const drawerOuterW = guideType === 'side' ? inW - 2 * guideTh : inW;
+    const dInW = drawerOuterW;
+
+    // Ύψος συρταριού
     const totalGaps = gBottom + (cnt - 1) * gBetween + gTop;
     const availH = inH - totalGaps;
     const dH = Math.floor(availH / cnt);
-    // Effective drawer height accounting for guide height
-    const dDrawH = guideType === 'side' && guideH > 0 ? Math.min(dH, dH - 0) : dH;
 
-    // Drawer depth: user or auto
+    // Βάθος συρταριού
     let dD = val('drawer-depth');
     if (!dD || dD <= 0) dD = D - 40;
 
-    // Front face dimensions
+    // Πρόσωπο συρταριού
     let frontW, frontH;
     if (frontType === 'overlay') {
-      // overlay: slightly narrower than opening for clearance
       frontW = inW - 2;
       frontH = dH;
     } else {
-      // inset: fits inside
       frontW = inW - 4;
       frontH = dH - 2;
+    }
+
+    // Υπολογισμός Πάτου Συρταριού
+    let botW_cut, botD_cut, botLabel;
+    if (drawerBottomType === 'same') {
+      botW_cut = drawerOuterW;
+      botD_cut = dD;
+      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός)`;
+    } else {
+      botW_cut = drawerOuterW - 3;
+      botD_cut = dD - 3;
+      botLabel = `Πάτος συρταριού (${drawerBottomType} — Καρφωτός)`;
     }
 
     let drawerBody = '';
     drawerBody += row('Μπροστινό πρόσωπο συρταριού', frontW, frontH, cnt);
     drawerBody += row('Πλαϊνό συρταριού', dD, dH, cnt * 2);
     drawerBody += row('Πίσω συρταριού', dInW, dH, cnt);
-    drawerBody += row('Πάτος συρταριού', dInW, dD, cnt);
+    drawerBody += row(botLabel, botW_cut, botD_cut, cnt);
 
     $('drawer-result-body').innerHTML = drawerBody;
 
@@ -1150,11 +1209,16 @@ function calculate() {
       ? `Πλαϊνός οδηγός: ${guideTh}mm × 2 = ${guideTh * 2}mm αφαιρείται από πλάτος`
       : `Κάτω οδηγός: πάχος ${guideTh}mm, δεν αφαιρεί από πλάτος`;
 
+    const bottomNote = drawerBottomType === 'same'
+      ? `Πάτος μελαμίνης ${t}mm (ίσος με τις εξωτερικές διαστάσεις του συρταριού ${drawerOuterW} × ${dD} mm)`
+      : `Πάτος ${drawerBottomType} καρφωτός (-3mm από το συνολικό μήκος & βάθος συρταριού)`;
+
     $('drawer-summary').innerHTML = `
       <p class="big">📦 Λεπτομέρειες συρταριών (${cnt} τεμ.)</p>
-      <p>Εξ. πλάτος μπρος: <strong>${frontW} mm</strong> &nbsp;|&nbsp; Εσ. πλάτος: <strong>${dInW} mm</strong></p>
+      <p>Εξ. πλάτος μπρος: <strong>${frontW} mm</strong> &nbsp;|&nbsp; Εσ. πλάτος συρταριέρας: <strong>${dInW} mm</strong></p>
       <p>Ύψος συρταριού: <strong>${dH} mm</strong> &nbsp;|&nbsp; Βάθος: <strong>${dD} mm</strong></p>
       <p>${guideNote}</p>
+      <p>${bottomNote}</p>
       <p>Υπόλοιπο χώρος (αέρας): <strong>${availH - cnt * dH} mm</strong></p>`;
 
     show('drawer-results-card');
@@ -1200,6 +1264,7 @@ function calculateWall() {
   const t = parseInt($('wall-thickness').value) || 18;
   const wbt = $('wall-box-type').value;
   const wj = wallJointType;
+  const wBackType = $('wall-back-type').value;
 
   if (!W || !H || !D || !unitW) return;
 
@@ -1213,7 +1278,7 @@ function calculateWall() {
   html += `<div class="wall-item"><span class="lbl">Διαστάσεις μονάδας</span><span class="val">${unitW} × ${H} × ${D} mm</span></div>`;
   html += `<div class="wall-item"><span class="lbl">Αριθμός ντουλαπιών</span><span class="val">${n} τεμάχια</span></div>`;
   html += `<div class="wall-item"><span class="lbl">Χρησιμοποιημένο πλάτος</span><span class="val">${usedW} mm</span></div>`;
-  html += `<div class="wall-item"><span class="lbl">Υπόλοιπο χώρος</span><span class="val ${remainder > 0 ? '' : ''}">${remainder} mm</span></div>`;
+  html += `<div class="wall-item"><span class="lbl">Υπόλοιπο χώρος</span><span class="val">${remainder} mm</span></div>`;
 
   $('wall-result-body').innerHTML = html;
 
@@ -1230,11 +1295,23 @@ function calculateWall() {
     sideH_cut = H;
   }
 
+  // Υπολογισμός Πλάτης
+  let backW_cut, backH_cut, backLabel;
+  if (wBackType === 'same') {
+    backW_cut = unitW;
+    backH_cut = H;
+    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή)`;
+  } else {
+    backW_cut = unitW - 3;
+    backH_cut = H - 3;
+    backLabel = `Πλάτη (${wBackType} — Καρφωτή)`;
+  }
+
   let cutsBody = '';
   cutsBody += row('Πάνελ πάνω', unitW, topD_cut, 1);
   cutsBody += row('Πάνελ κάτω', unitW, topD_cut, 1);
   cutsBody += row('Πλαϊνό', D, sideH_cut, 2);
-  cutsBody += row('Πλάτη', unitW - 2*t, H - 2*t, 1);
+  cutsBody += row(backLabel, backW_cut, backH_cut, 1);
 
   if (wbt === 'door1') {
     const dW = inW - 4, dH = inH - 4;
@@ -1246,13 +1323,27 @@ function calculateWall() {
     const cnt = intVal('wall-drawer-count') || 3;
     const guideType = $('wall-guide-type').value;
     const guideTh = val('wall-guide-thickness');
-    const dInW = guideType === 'side' ? inW - 2 * guideTh : inW;
+    const wBotType = $('wall-drawer-bottom-type').value;
+
+    const drawerOuterW = guideType === 'side' ? inW - 2 * guideTh : inW;
     const dH = Math.floor((inH - 5 - (cnt-1)*3 - 5) / cnt);
     const dD = D - 40;
+
+    let botW_cut, botD_cut, botLabel;
+    if (wBotType === 'same') {
+      botW_cut = drawerOuterW;
+      botD_cut = dD;
+      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός)`;
+    } else {
+      botW_cut = drawerOuterW - 3;
+      botD_cut = dD - 3;
+      botLabel = `Πάτος συρταριού (${wBotType} — Καρφωτός)`;
+    }
+
     cutsBody += row('Μπροστινό πρόσωπο', inW - 2, dH, cnt);
     cutsBody += row('Πλαϊνό συρταριού', dD, dH, cnt * 2);
-    cutsBody += row('Πίσω συρταριού', dInW, dH, cnt);
-    cutsBody += row('Πάτος συρταριού', dInW, dD, cnt);
+    cutsBody += row('Πίσω συρταριού', drawerOuterW, dH, cnt);
+    cutsBody += row(botLabel, botW_cut, botD_cut, cnt);
   }
 
   $('wall-cuts-body').innerHTML = cutsBody;
@@ -1261,7 +1352,7 @@ function calculateWall() {
   $('wall-summary').innerHTML = `
     <p class="big">✅ Σύνοψη: ${n} ντουλάπια × (${unitW} × ${H} × ${D} mm), πάχος ${t}mm</p>
     <p>Εσωτερικό: <strong>${inW} mm</strong> πλάτος × <strong>${inH} mm</strong> ύψος × <strong>${D} mm</strong> βάθος</p>
-    <p>Σύνδεση: <strong>${wj === 'top' ? 'Πάνω/Κάτω over πλαϊνά' : 'Πλαϊνά over πάνω/κάτω'}</strong></p>`;
+    <p>Σύνδεση: <strong>${wj === 'top' ? 'Πάνω/Κάτω over πλαϊνά' : 'Πλαϊνά over πάνω/κάτω'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${wBackType === 'same' ? 'Μελαμίνη (Εξωτερική βιδωτή)' : wBackType + ' (Καρφωτή -3mm)'}</strong></p>`;
   show('wall-summary');
 
   if (remainder > 30) {
