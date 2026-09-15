@@ -314,7 +314,6 @@ body {
 }
 .warn-box p { font-size: 13px; color: var(--warn-text); line-height: 1.5; }
 
-/* ── Wall result items ── */
 .wall-item {
   display: flex;
   justify-content: space-between;
@@ -327,21 +326,7 @@ body {
 .wall-item .lbl { color: var(--text2); }
 .wall-item .val { font-weight: 600; color: var(--text); }
 
-/* ── Hidden utility ── */
 .hidden { display: none !important; }
-
-/* ── Drawer options nested ── */
-.drawer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-@media (max-width: 400px) {
-  .drawer-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* ── Print ── */
-@media print {
-  .app-header, .tabs-bar, .btn-calc { display: none; }
-  .content { padding: 0; }
-  body { background: white; color: black; }
-}
 
 /* ── PIN Lock Screen ── */
 #pin-overlay {
@@ -354,7 +339,6 @@ body {
   justify-content: center;
   z-index: 9999;
   padding: 24px;
-  gap: 0;
 }
 #pin-overlay .pin-logo {
   width: 64px; height: 64px;
@@ -363,22 +347,9 @@ body {
   display: flex; align-items: center; justify-content: center;
   margin-bottom: 18px;
 }
-#pin-overlay h2 {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-#pin-overlay p {
-  color: rgba(255,255,255,0.65);
-  font-size: 14px;
-  margin-bottom: 28px;
-}
-.pin-dots {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 32px;
-}
+#pin-overlay h2 { color: #fff; font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+#pin-overlay p { color: rgba(255,255,255,0.65); font-size: 14px; margin-bottom: 28px; }
+.pin-dots { display: flex; gap: 14px; margin-bottom: 32px; }
 .pin-dot {
   width: 14px; height: 14px;
   border-radius: 50%;
@@ -386,10 +357,7 @@ body {
   background: transparent;
   transition: background 0.15s;
 }
-.pin-dot.filled {
-  background: #fff;
-  border-color: #fff;
-}
+.pin-dot.filled { background: #fff; border-color: #fff; }
 .pin-keypad {
   display: grid;
   grid-template-columns: repeat(3, 72px);
@@ -411,16 +379,8 @@ body {
 .pin-key:active { background: rgba(255,255,255,0.35); transform: scale(0.94); }
 .pin-key.empty { background: transparent; cursor: default; }
 .pin-key.del { font-size: 18px; }
-.pin-error {
-  color: #ffb3b3;
-  font-size: 13px;
-  margin-top: 16px;
-  min-height: 18px;
-  text-align: center;
-}
-#pin-overlay.shake {
-  animation: pinShake 0.4s ease;
-}
+.pin-error { color: #ffb3b3; font-size: 13px; margin-top: 16px; min-height: 18px; text-align: center; }
+#pin-overlay.shake { animation: pinShake 0.4s ease; }
 @keyframes pinShake {
   0%,100% { transform: translateX(0); }
   20% { transform: translateX(-10px); }
@@ -456,12 +416,7 @@ body {
   cursor: pointer;
   flex-shrink: 0;
 }
-#install-banner .close-btn {
-  background: transparent;
-  color: rgba(255,255,255,0.7);
-  font-size: 18px;
-  padding: 4px 8px;
-}
+#install-banner .close-btn { background: transparent; color: rgba(255,255,255,0.7); font-size: 18px; padding: 4px 8px; }
 </style>
 </head>
 <body>
@@ -472,8 +427,6 @@ body {
       <rect x="2" y="3" width="16" height="14" rx="1.5" stroke="#fff" stroke-width="1.5"/>
       <line x1="2" y1="10" x2="18" y2="10" stroke="#fff" stroke-width="1.5"/>
       <line x1="10" y1="10" x2="10" y2="17" stroke="#fff" stroke-width="1.5"/>
-      <circle cx="7" cy="13.5" r="1" fill="#fff" opacity="0.8"/>
-      <circle cx="14" cy="13.5" r="1" fill="#fff" opacity="0.8"/>
     </svg>
   </div>
   <div>
@@ -547,10 +500,8 @@ body {
 
   <!-- Τρόπος σύνδεσης -->
   <div class="card">
-    <div class="card-title">Τρόπος σύνδεσης βιδών</div>
+    <div class="card-title">Τρόπος σύνδεσης βιδών κουτιού</div>
     <div class="joint-grid" id="joint-grid">
-
-      <!-- TOP overrides sides -->
       <div class="joint-card active" onclick="setJoint('top',this)">
         <svg width="90" height="68" viewBox="0 0 90 68">
           <rect x="6" y="4" width="78" height="10" rx="2" fill="var(--accent)" opacity="0.85"/>
@@ -564,8 +515,6 @@ body {
         </svg>
         <span>Πάνω/Κάτω πάνω από πλαϊνά</span>
       </div>
-
-      <!-- SIDE overrides top/bottom -->
       <div class="joint-card" onclick="setJoint('side',this)">
         <svg width="90" height="68" viewBox="0 0 90 68">
           <rect x="6" y="4" width="10" height="60" rx="2" fill="var(--accent)" opacity="0.85"/>
@@ -579,9 +528,7 @@ body {
         </svg>
         <span>Πλαϊνά πάνω από πάνω/κάτω</span>
       </div>
-
     </div>
-    <div class="note">Το μπλε πάνελ "αγκαλιάζει" το γκρι — εκεί μπαίνουν οι βίδες από έξω.</div>
   </div>
 
   <!-- Ρυθμίσεις Συρταριέρας -->
@@ -651,7 +598,7 @@ body {
     </div>
 
     <div class="note" id="guide-note">
-      Πλαϊνός οδηγός: αφαιρείται από κάθε πλευρά (×2) για το εσωτερικό πλάτος. Εάν έχει ύψος, αφαιρείται και αυτό.
+      Τα συρτάρια υπολογίζονται με **αυτόνομο εσωτερικό κουτί** (τα πλαϊνά βιδώνουν τα μπρος/πίσω κομμάτια) και το **μπροστινό πρόσωπο** τοποθετείται εξωτερικά πάνω στο κουτί.
     </div>
   </div>
 
@@ -668,7 +615,6 @@ body {
         <input type="number" id="door-gap-center" value="3" min="1" max="10" inputmode="numeric">
       </div>
     </div>
-    <div class="note">Ο αέρας εξασφαλίζει ελεύθερο άνοιγμα χωρίς τριβή. Για overlay μεντεσέδες: 2mm περιφέρεια, 3mm κέντρο.</div>
   </div>
 
   <button class="btn-calc" onclick="calculate()">
@@ -681,13 +627,7 @@ body {
 
   <div id="results" class="hidden">
     <div class="results-card" id="box-results-card">
-      <div class="results-header">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M1.5 8h13M8 8v6.5" stroke="currentColor" stroke-width="1.3"/>
-        </svg>
-        Κοπές κουτιού
-      </div>
+      <div class="results-header">Κοπές κουτιού</div>
       <table class="cut-table">
         <thead>
           <tr>
@@ -704,14 +644,7 @@ body {
     <div id="summary-box" class="summary-box hidden"></div>
 
     <div class="results-card hidden" id="drawer-results-card">
-      <div class="results-header">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1.5" y="4" width="13" height="8" rx="1" stroke="currentColor" stroke-width="1.3"/>
-          <line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="8" cy="8" r="0.8" fill="currentColor"/>
-        </svg>
-        Κοπές συρταριών
-      </div>
+      <div class="results-header">Κοπές συρταριών</div>
       <table class="cut-table">
         <thead><tr><th>Τεμάχιο</th><th>Μήκος</th><th>Ύψος</th><th>Τεμ.</th></tr></thead>
         <tbody id="drawer-result-body"></tbody>
@@ -721,15 +654,7 @@ body {
     <div id="drawer-summary" class="summary-box hidden"></div>
 
     <div class="results-card hidden" id="door-results-card">
-      <div class="results-header">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="1.5" width="12" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-          <line x1="9" y1="1.5" x2="9" y2="14.5" stroke="currentColor" stroke-width="1"/>
-          <circle cx="7" cy="8" r="0.9" fill="currentColor"/>
-          <circle cx="11" cy="8" r="0.9" fill="currentColor"/>
-        </svg>
-        Κοπές πόρτας/ών
-      </div>
+      <div class="results-header">Κοπές πόρτας/ών</div>
       <table class="cut-table">
         <thead><tr><th>Τεμάχιο</th><th>Μήκος</th><th>Ύψος</th><th>Τεμ.</th></tr></thead>
         <tbody id="door-result-body"></tbody>
@@ -816,10 +741,6 @@ body {
           <rect x="6" y="54" width="78" height="10" rx="2" fill="var(--accent)" opacity="0.85"/>
           <rect x="6" y="14" width="10" height="40" rx="2" fill="var(--border-strong)"/>
           <rect x="74" y="14" width="10" height="40" rx="2" fill="var(--border-strong)"/>
-          <circle cx="28" cy="9" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="62" cy="9" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="28" cy="59" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="62" cy="59" r="2.5" fill="white" opacity="0.9"/>
         </svg>
         <span>Πάνω/Κάτω πάνω</span>
       </div>
@@ -829,10 +750,6 @@ body {
           <rect x="74" y="4" width="10" height="60" rx="2" fill="var(--accent)" opacity="0.85"/>
           <rect x="16" y="4" width="58" height="10" rx="2" fill="var(--border-strong)"/>
           <rect x="16" y="54" width="58" height="10" rx="2" fill="var(--border-strong)"/>
-          <circle cx="11" cy="22" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="11" cy="46" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="79" cy="22" r="2.5" fill="white" opacity="0.9"/>
-          <circle cx="79" cy="46" r="2.5" fill="white" opacity="0.9"/>
         </svg>
         <span>Πλαϊνά πάνω</span>
       </div>
@@ -904,8 +821,6 @@ body {
       <rect x="3" y="5" width="26" height="22" rx="2.5" stroke="#fff" stroke-width="2"/>
       <line x1="3" y1="16" x2="29" y2="16" stroke="#fff" stroke-width="2"/>
       <line x1="16" y1="16" x2="16" y2="27" stroke="#fff" stroke-width="1.5"/>
-      <circle cx="11" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
-      <circle cx="21" cy="22" r="1.5" fill="#fff" opacity="0.8"/>
     </svg>
   </div>
   <h2>Κοπές Μελαμίνης</h2>
@@ -941,12 +856,8 @@ body {
 </div>
 
 <script>
-// ════════════════════════════════════════
-// ▶▶ ΕΔΩ ΟΡΙΖΕΙΣ ΤΟ PIN σου (4 ψηφία) ◀◀
 const APP_PIN = '2580';
-// ════════════════════════════════════════
 
-// ── PIN Logic ──────────────────────────
 let pinInput = '';
 const PIN_LEN = APP_PIN.length;
 
@@ -988,21 +899,18 @@ function checkPin() {
   }
 }
 
-// Keyboard support for desktop
 document.addEventListener('keydown', e => {
   if ($('pin-overlay').style.display === 'none') return;
   if (e.key >= '0' && e.key <= '9') pinPress(e.key);
   else if (e.key === 'Backspace') pinDelete();
 });
 
-// ── State ──────────────────────────────
 let boxType = 'open';
 let jointType = 'top';
 let thickness = 18;
 let backType = '3mm';
 let wallJointType = 'top';
 
-// ── Helpers ────────────────────────────
 const $ = id => document.getElementById(id);
 const val = id => parseFloat($(id).value) || 0;
 const intVal = id => parseInt($(id).value) || 0;
@@ -1020,7 +928,6 @@ function show(id) { $(id).classList.remove('hidden'); }
 function hide(id) { $(id).classList.add('hidden'); }
 function toggle(id, vis) { vis ? show(id) : hide(id); }
 
-// ── Tab switch ─────────────────────────
 function switchTab(t) {
   toggle('pane-single', t === 'single');
   toggle('pane-wall', t === 'wall');
@@ -1030,7 +937,6 @@ function switchTab(t) {
   hide('wall-results');
 }
 
-// ── Box type ───────────────────────────
 function setBoxType(v, el) {
   boxType = v;
   document.querySelectorAll('#box-type-group .chip').forEach(c => c.className = 'chip');
@@ -1041,21 +947,18 @@ function setBoxType(v, el) {
   hide('results');
 }
 
-// ── Thickness ──────────────────────────
 function setThickness(v, el) {
   thickness = v;
   document.querySelectorAll('#thickness-group .chip').forEach(c => c.className = 'chip');
   el.className = 'chip active';
 }
 
-// ── Backing Type ───────────────────────
 function setBackType(v, el) {
   backType = v;
   document.querySelectorAll('#back-type-group .chip').forEach(c => c.className = 'chip');
   el.className = 'chip active';
 }
 
-// ── Joint ──────────────────────────────
 function setJoint(v, el) {
   jointType = v;
   document.querySelectorAll('#joint-grid .joint-card').forEach(c => c.className = 'joint-card');
@@ -1068,7 +971,6 @@ function setWallJoint(v, el) {
   el.className = 'joint-card active';
 }
 
-// ── Guide type change ─────────────────
 function onGuideTypeChange() {
   const t = $('guide-type').value;
   $('guide-note').textContent = t === 'side'
@@ -1076,16 +978,13 @@ function onGuideTypeChange() {
     : 'Κάτω οδηγός: δεν αφαιρεί πλάτος — το πάτωμα του συρταριού προσαρμόζεται. Αφαιρεί ύψος από εσωτερικό.';
 }
 
-// ── Wall box type change ───────────────
 function onWallBoxTypeChange() {
   toggle('wall-drawer-opts', $('wall-box-type').value === 'drawer');
 }
 
-// ── Validation ─────────────────────────
 function validateSingle() {
   let ok = true;
   ['w', 'h', 'd'].forEach(d => {
-    const fid = 'f-' + d;
     const v2 = val('dim-' + d);
     if (v2 < 50) { $('f-' + d).classList.add('has-err'); ok = false; }
     else $('f-' + d).classList.remove('has-err');
@@ -1093,23 +992,19 @@ function validateSingle() {
   return ok;
 }
 
-// ── SINGLE CALCULATE ───────────────────
 function calculate() {
   if (!validateSingle()) return;
 
   const W = val('dim-w'), H = val('dim-h'), D = val('dim-d');
   const t = thickness;
 
-  // Box cuts based on joint
   let topW, topD, botW, botD, lW, lH, rW, rH;
   if (jointType === 'top') {
-    // top/bottom full width, sides shorter
     topW = W; topD = D;
     botW = W; botD = D;
     lH = H - 2 * t; lW = D;
     rH = H - 2 * t; rW = D;
   } else {
-    // sides full height, top/bottom shorter width
     topW = W - 2 * t; topD = D;
     botW = W - 2 * t; botD = D;
     lH = H; lW = D;
@@ -1119,7 +1014,6 @@ function calculate() {
   const inW = W - 2 * t;
   const inH = H - 2 * t;
 
-  // Υπολογισμός Πλάτης Κουτιού
   let backW_cut, backH_cut, backLabel;
   if (backType === 'same') {
     backW_cut = W;
@@ -1155,27 +1049,25 @@ function calculate() {
     const cnt = intVal('drawer-count') || 3;
     const guideType = $('guide-type').value;
     const guideTh = val('guide-thickness');
-    const guideH = val('guide-height');
     const gBottom = val('drawer-gap-bottom');
     const gBetween = val('drawer-gap-between');
     const gTop = val('drawer-gap-top');
     const frontType = $('drawer-front-type').value;
     const drawerBottomType = $('drawer-bottom-type').value;
 
-    // Συνολικό εξωτερικό πλάτος συρταριού
+    // Εξωτερικό πλάτος του κουτιού του συρταριού
     const drawerOuterW = guideType === 'side' ? inW - 2 * guideTh : inW;
-    const dInW = drawerOuterW;
+    
+    // Εσωτερικό πλάτος (μπρος-πίσω κομμάτια κουτιού συρταριού ανάμεσα στα πλαϊνά του)
+    const boxInnerW = drawerOuterW - 2 * t;
 
-    // Ύψος συρταριού
     const totalGaps = gBottom + (cnt - 1) * gBetween + gTop;
     const availH = inH - totalGaps;
     const dH = Math.floor(availH / cnt);
 
-    // Βάθος συρταριού
     let dD = val('drawer-depth');
     if (!dD || dD <= 0) dD = D - 40;
 
-    // Πρόσωπο συρταριού
     let frontW, frontH;
     if (frontType === 'overlay') {
       frontW = inW - 2;
@@ -1185,7 +1077,6 @@ function calculate() {
       frontH = dH - 2;
     }
 
-    // Υπολογισμός Πάτου Συρταριού
     let botW_cut, botD_cut, botLabel;
     if (drawerBottomType === 'same') {
       botW_cut = drawerOuterW;
@@ -1198,28 +1089,23 @@ function calculate() {
     }
 
     let drawerBody = '';
-    drawerBody += row('Μπροστινό πρόσωπο συρταριού', frontW, frontH, cnt);
-    drawerBody += row('Πλαϊνό συρταριού', dD, dH, cnt * 2);
-    drawerBody += row('Πίσω συρταριού', dInW, dH, cnt);
+    drawerBody += row('Μπροστινό πρόσωπο συρταριού (Φατνίο)', frontW, frontH, cnt);
+    drawerBody += row('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, dH, cnt * 2);
+    drawerBody += row('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, dH, cnt * 2);
     drawerBody += row(botLabel, botW_cut, botD_cut, cnt);
 
     $('drawer-result-body').innerHTML = drawerBody;
 
     const guideNote = guideType === 'side'
       ? `Πλαϊνός οδηγός: ${guideTh}mm × 2 = ${guideTh * 2}mm αφαιρείται από πλάτος`
-      : `Κάτω οδηγός: πάχος ${guideTh}mm, δεν αφαιρεί από πλάτος`;
-
-    const bottomNote = drawerBottomType === 'same'
-      ? `Πάτος μελαμίνης ${t}mm (ίσος με τις εξωτερικές διαστάσεις του συρταριού ${drawerOuterW} × ${dD} mm)`
-      : `Πάτος ${drawerBottomType} καρφωτός (-3mm από το συνολικό μήκος & βάθος συρταριού)`;
+      : `Κάτω οδηγός: πάχος ${guideTh}mm`;
 
     $('drawer-summary').innerHTML = `
       <p class="big">📦 Λεπτομέρειες συρταριών (${cnt} τεμ.)</p>
-      <p>Εξ. πλάτος μπρος: <strong>${frontW} mm</strong> &nbsp;|&nbsp; Εσ. πλάτος συρταριέρας: <strong>${dInW} mm</strong></p>
-      <p>Ύψος συρταριού: <strong>${dH} mm</strong> &nbsp;|&nbsp; Βάθος: <strong>${dD} mm</strong></p>
-      <p>${guideNote}</p>
-      <p>${bottomNote}</p>
-      <p>Υπόλοιπο χώρος (αέρας): <strong>${availH - cnt * dH} mm</strong></p>`;
+      <p>Μπροστινό πρόσωπο: <strong>${frontW} × ${frontH} mm</strong></p>
+      <p>Εξωτερικό κουτί συρταριού: <strong>${drawerOuterW} × ${dH} × ${dD} mm</strong></p>
+      <p>Εσωτερικό πλάτος κουτιού (Μπρος/Πίσω κομμάτια): <strong>${boxInnerW} mm</strong> (αφαιρέθηκε 2×${t}mm πάχος)</p>
+      <p>${guideNote}</p>`;
 
     show('drawer-results-card');
     show('drawer-summary');
@@ -1241,7 +1127,7 @@ function calculate() {
     const dH2 = inH - 2 * gFrame;
     let doorBody = row('Πόρτα (κάθε μία από 2)', dW, dH2, 2);
     $('door-result-body').innerHTML = doorBody;
-    $('door-warn').innerHTML = `<p>↔ Αέρας ανάμεσα σε πόρτες: <strong>${gCenter}mm</strong> — εξασφαλίζει ελεύθερο άνοιγμα χωρίς να βρίσκουν η μία την άλλη.</p>`;
+    $('door-warn').innerHTML = `<p>↔ Αέρας ανάμεσα σε πόρτες: <strong>${gCenter}mm</strong></p>`;
     show('door-results-card');
     show('door-warn');
     hide('drawer-results-card');
@@ -1257,7 +1143,6 @@ function calculate() {
   setTimeout(() => $('results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
-// ── WALL CALCULATE ─────────────────────
 function calculateWall() {
   const W = val('wall-w'), H = val('wall-h'), D = val('wall-d');
   const unitW = val('wall-unit-w'), gap = val('wall-gap');
@@ -1272,7 +1157,6 @@ function calculateWall() {
   const usedW = n * unitW + (n > 1 ? (n - 1) * gap : 0);
   const remainder = W - usedW;
 
-  // Wall overview
   let html = '';
   html += `<div class="wall-item"><span class="lbl">Πλάτος τοίχου</span><span class="val">${W} mm</span></div>`;
   html += `<div class="wall-item"><span class="lbl">Διαστάσεις μονάδας</span><span class="val">${unitW} × ${H} × ${D} mm</span></div>`;
@@ -1282,7 +1166,6 @@ function calculateWall() {
 
   $('wall-result-body').innerHTML = html;
 
-  // Per-unit cuts
   const inW = unitW - 2 * t;
   const inH = H - 2 * t;
 
@@ -1295,7 +1178,6 @@ function calculateWall() {
     sideH_cut = H;
   }
 
-  // Υπολογισμός Πλάτης
   let backW_cut, backH_cut, backLabel;
   if (wBackType === 'same') {
     backW_cut = unitW;
@@ -1326,6 +1208,7 @@ function calculateWall() {
     const wBotType = $('wall-drawer-bottom-type').value;
 
     const drawerOuterW = guideType === 'side' ? inW - 2 * guideTh : inW;
+    const boxInnerW = drawerOuterW - 2 * t;
     const dH = Math.floor((inH - 5 - (cnt-1)*3 - 5) / cnt);
     const dD = D - 40;
 
@@ -1340,9 +1223,9 @@ function calculateWall() {
       botLabel = `Πάτος συρταριού (${wBotType} — Καρφωτός)`;
     }
 
-    cutsBody += row('Μπροστινό πρόσωπο', inW - 2, dH, cnt);
-    cutsBody += row('Πλαϊνό συρταριού', dD, dH, cnt * 2);
-    cutsBody += row('Πίσω συρταριού', drawerOuterW, dH, cnt);
+    cutsBody += row('Μπροστινό πρόσωπο συρταριού (Φατνίο)', inW - 2, dH, cnt);
+    cutsBody += row('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, dH, cnt * 2);
+    cutsBody += row('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, dH, cnt * 2);
     cutsBody += row(botLabel, botW_cut, botD_cut, cnt);
   }
 
@@ -1366,7 +1249,6 @@ function calculateWall() {
   setTimeout(() => $('wall-results').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
-// ── PWA Install ────────────────────────
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
@@ -1383,7 +1265,6 @@ $('install-btn').addEventListener('click', async () => {
   $('install-banner').style.display = 'none';
 });
 
-// ── Service Worker ─────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
