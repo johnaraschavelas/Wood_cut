@@ -27,9 +27,9 @@
   --success: #1e6b3c;
   --success-bg: #e6f4ec;
   --success-border: #9ecdb4;
-  --warn-bg: #fef9ec;
-  --warn-border: #e8d48a;
-  --warn-text: #7a6010;
+  --warn-bg: #f8d7da;
+  --warn-border: #f5c6cb;
+  --warn-text: #721c24;
   --danger: #c0392b;
   --radius: 10px;
   --radius-sm: 6px;
@@ -52,9 +52,9 @@
     --success: #4eb878;
     --success-bg: #0e2a1c;
     --success-border: #1a5030;
-    --warn-bg: #2a2010;
-    --warn-border: #5a4a10;
-    --warn-text: #d4b050;
+    --warn-bg: #3d1618;
+    --warn-border: #842029;
+    --warn-text: #ea868f;
     --danger: #e05a4a;
   }
 }
@@ -290,6 +290,23 @@ body {
   font-weight: 600;
 }
 
+/* Κοκκίνισμα λανθασμένων γραμμών κοπής */
+.cut-table tr.err-row {
+  background-color: var(--warn-bg) !important;
+}
+.cut-table tr.err-row td {
+  color: var(--warn-text) !important;
+  font-weight: bold;
+}
+.cut-table tr.err-row .dim {
+  color: var(--warn-text) !important;
+}
+.cut-table tr.err-row .qty-badge {
+  background: rgba(224, 90, 74, 0.15);
+  border-color: var(--warn-border);
+  color: var(--warn-text);
+}
+
 .summary-box {
   background: var(--success-bg);
   border: 1px solid var(--success-border);
@@ -300,14 +317,22 @@ body {
 .summary-box p { font-size: 13px; color: var(--success); margin: 3px 0; line-height: 1.5; }
 .summary-box .big { font-size: 15px; font-weight: 600; }
 
+/* Ενισχυμένη Προειδοποίηση με μεγαλύτερα γράμματα και έντονο κόκκινο φόντο */
 .warn-box {
   background: var(--warn-bg);
-  border: 1px solid var(--warn-border);
+  border: 1.5px solid var(--warn-border);
   border-radius: var(--radius);
-  padding: 10px 14px;
+  padding: 12px 16px;
   margin-bottom: 12px;
 }
-.warn-box p { font-size: 13px; color: var(--warn-text); line-height: 1.5; }
+.warn-box p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--warn-text);
+  line-height: 1.5;
+  margin-bottom: 4px;
+}
+.warn-box p:last-child { margin-bottom: 0; }
 
 .wall-item {
   display: flex;
@@ -652,8 +677,8 @@ body {
         <label>Πάτος συρταριού</label>
         <select id="drawer-bottom-type">
           <option value="3mm" selected>3mm (Καρφωτός -3mm)</option>
-          <option value="8mm">8mm (Καρφωτός -3mm)</option>
-          <option value="same">Ίδιο με μελαμίνη κουτιού (Βιδωτός εξωτερικά)</option>
+          <option value="8mm">8mm (Καρφωτός -8mm)</option>
+          <option value="same">Ίδιο με μελαμίνη κουτιού (Βιδωτός)</option>
         </select>
       </div>
     </div>
@@ -713,6 +738,7 @@ body {
     </div>
 
     <div id="drawer-summary" class="summary-box hidden"></div>
+    <div id="drawer-warn" class="warn-box hidden"></div>
 
     <div class="results-card hidden" id="door-results-card">
       <div class="results-header">Κοπές πόρτας/ών</div>
@@ -845,8 +871,8 @@ body {
         <label>Πάτος συρταριού</label>
         <select id="wall-drawer-bottom-type">
           <option value="3mm" selected>3mm (Καρφωτός -3mm)</option>
-          <option value="8mm">8mm (Καρφωτός -3mm)</option>
-          <option value="same">Ίδιο με μελαμίνη κουτιού (Βιδωτός εξωτερικά)</option>
+          <option value="8mm">8mm (Καρφωτός -8mm)</option>
+          <option value="same">Ίδιο με μελαμίνη κουτιού</option>
         </select>
       </div>
     </div>
@@ -969,7 +995,7 @@ body {
 </div>
 
 <script>
-const APP_PIN = '1234';
+const APP_PIN = '2580';
 
 let pinInput = '';
 const PIN_LEN = APP_PIN.length;
@@ -1031,13 +1057,14 @@ const $ = id => document.getElementById(id);
 const val = id => parseFloat($(id).value) || 0;
 const intVal = id => parseInt($(id).value) || 0;
 
-function addCutItem(name, l, h, qty) {
-  currentCutList.push({ name, l, h, qty, note: '' });
-  return row(name, l, h, qty);
+function addCutItem(name, l, h, qty, isErr = false) {
+  currentCutList.push({ name, l, h, qty, note: '', isErr });
+  return row(name, l, h, qty, isErr);
 }
 
-function row(name, l, h, qty) {
-  return `<tr>
+function row(name, l, h, qty, isErr = false) {
+  const cls = isErr ? ' class="err-row"' : '';
+  return `<tr${cls}>
     <td>${name}</td>
     <td><span class="dim">${l}</span></td>
     <td><span class="dim">${h}</span></td>
@@ -1052,8 +1079,7 @@ function toggle(id, vis) { vis ? show(id) : hide(id); }
 function switchTab(t) {
   toggle('pane-single', t === 'single');
   toggle('pane-wall', t === 'wall');
-  $('tab-single').className = 'tab-btn' + (t === 'single' ? ' active' : '');
-  $('tab-wall').className = 'tab-btn' + (t === 'wall' ? ' active' : '');
+  $('tab-single').className = 'tab-btn' + (t === 'single' ? ' active' : '');$('tab-wall').className = 'tab-btn' + (t === 'wall' ? ' active' : '');
   hide('results');
   hide('wall-results');
 }
@@ -1120,42 +1146,32 @@ function calculate() {
   const W = val('dim-w'), H = val('dim-h'), D = val('dim-d');
   const t = thickness;
 
-  // Υπολογισμός επίδρασης πλάτης στο βάθος σκελετού
-  let effectiveDepth = D;
-  let backW_cut, backH_cut, backLabel;
-
-  if (backType === 'same') {
-    effectiveDepth = D - t; // Αφαιρείται το πάχος της μελαμίνης για να διατηρηθεί το συνολικό εξωτερικό βάθος
-    backW_cut = W;           // Ίσο με τις εξωτερικές διαστάσεις
-    backH_cut = H;
-    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή εξωτερικά)`;
-  } else if (backType === '8mm') {
-    effectiveDepth = D - 8;
-    backW_cut = W - 3;       // 3mm μικρότερο από το συνολικό μήκος/πλάτος
-    backH_cut = H - 3;       // 3mm μικρότερο από το συνολικό ύψος
-    backLabel = `Πλάτη (8mm — Καρφωτή)`;
-  } else {
-    effectiveDepth = D - 3;
-    backW_cut = W - 3;       // 3mm μικρότερο από το συνολικό μήκος/πλάτος
-    backH_cut = H - 3;       // 3mm μικρότερο από το συνολικό ύψος
-    backLabel = `Πλάτη (3mm — Καρφωτή)`;
-  }
-
   let topW, topD, botW, botD, lW, lH, rW, rH;
   if (jointType === 'top') {
-    topW = W; topD = effectiveDepth;
-    botW = W; botD = effectiveDepth;
-    lH = H - 2 * t; lW = effectiveDepth;
-    rH = H - 2 * t; rW = effectiveDepth;
+    topW = W; topD = D;
+    botW = W; botD = D;
+    lH = H - 2 * t; lW = D;
+    rH = H - 2 * t; rW = D;
   } else {
-    topW = W - 2 * t; topD = effectiveDepth;
-    botW = W - 2 * t; botD = effectiveDepth;
-    lH = H; lW = effectiveDepth;
-    rH = H; rW = effectiveDepth;
+    topW = W - 2 * t; topD = D;
+    botW = W - 2 * t; botD = D;
+    lH = H; lW = D;
+    rH = H; rW = D;
   }
 
   const inW = W - 2 * t;
   const inH = H - 2 * t;
+
+  let backW_cut, backH_cut, backLabel;
+  if (backType === 'same') {
+    backW_cut = W;
+    backH_cut = H;
+    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή)`;
+  } else {
+    backW_cut = W - 3;
+    backH_cut = H - 3;
+    backLabel = `Πλάτη (${backType} — Καρφωτή)`;
+  }
 
   let body = '';
   body += addCutItem('Πάνελ πάνω', topW, topD, 1);
@@ -1163,7 +1179,7 @@ function calculate() {
   body += addCutItem('Πλαϊνό αριστερά', lW, lH, 1);
   body += addCutItem('Πλαϊνό δεξιά', rW, rH, 1);
   if (boxType === 'open') {
-    body += addCutItem('Ράφι (εσωτερικό)', inW, effectiveDepth, 1);
+    body += addCutItem('Ράφι (εσωτερικό)', inW, D - t, 1);
   }
   body += addCutItem(backLabel, backW_cut, backH_cut, 1);
 
@@ -1171,8 +1187,8 @@ function calculate() {
 
   const sumHTML = `
     <p class="big">📐 Εσωτερικές διαστάσεις κουτιού</p>
-    <p>Πλάτος: <strong>${inW} mm</strong> &nbsp;|&nbsp; Ύψος: <strong>${inH} mm</strong> &nbsp;|&nbsp; Βάθος σκελετού: <strong>${effectiveDepth} mm</strong> (Συνολικό εξωτερικό βάθος: <strong>${D} mm</strong>)</p>
-    <p>Πάχος μελαμίνης: <strong>${t} mm</strong> &nbsp;|&nbsp; Σύνδεση: <strong>${jointType === 'top' ? 'Πάνω/Κάτω over' : 'Πλαϊνά over'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${backType === 'same' ? 'Μελαμίνη ' + t + 'mm (Βιδωτή εξωτερικά ' + W + '×' + H + 'mm)' : backType + ' (Καρφωτή -3mm ' + backW_cut + '×' + backH_cut + 'mm)'}</strong></p>`;
+    <p>Πλάτος: <strong>${inW} mm</strong> &nbsp;|&nbsp; Ύψος: <strong>${inH} mm</strong> &nbsp;|&nbsp; Βάθος: <strong>${D} mm</strong></p>
+    <p>Πάχος μελαμίνης: <strong>${t} mm</strong> &nbsp;|&nbsp; Σύνδεση: <strong>${jointType === 'top' ? 'Πάνω/Κάτω over' : 'Πλαϊνά over'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${backType === 'same' ? 'Μελαμίνη ' + t + 'mm (Εξωτερική βιδωτή)' : backType + ' (Καρφωτή -3mm)'}</strong></p>`;
   $('summary-box').innerHTML = sumHTML;
   show('summary-box');
 
@@ -1198,7 +1214,48 @@ function calculate() {
     const boxH = (customBoxH > 0) ? customBoxH : dH;
 
     let dD = val('drawer-depth');
-    if (!dD || dD <= 0) dD = effectiveDepth - 40;
+    if (!dD || dD <= 0) dD = D - 40;
+
+    // ── ΕΛΕΓΧΟΙ ΔΙΑΣΤΑΣΕΩΝ ΣΥΡΤΑΡΙΟΥ ──
+    let drawerWarnings = [];
+    let errDepth = false;
+    let errWidth = false;
+    let errHeight = false;
+
+    if (dD >= D) {
+      errDepth = true;
+      drawerWarnings.push(`⚠️ <strong>Σφάλμα Βάθους:</strong> Το βάθος συρταριού (${dD}mm) είναι μεγαλύτερο ή ίσο με το βάθος του κουτιού (${D}mm).`);
+    }
+
+    if (guideType === 'side' && (guideTh * 2) >= inW) {
+      errWidth = true;
+      drawerWarnings.push(`⚠️ <strong>Σφάλμα Πλάτους:</strong> Οι οδηγοί (2 × ${guideTh}mm = ${guideTh * 2}mm) καταλαμβάνουν όλο ή περισσότερο από το εσωτερικό πλάτος (${inW}mm).`);
+    }
+
+    if (boxInnerW <= 0) {
+      errWidth = true;
+      drawerWarnings.push(`⚠️ <strong>Σφάλμα Πλάτους:</strong> Το εσωτερικό πλάτος συρταριού προκύπτει μηδενικό ή αρνητικό (${boxInnerW}mm).`);
+    }
+
+    if (totalGaps >= inH) {
+      errHeight = true;
+      drawerWarnings.push(`⚠️ <strong>Σφάλμα Ύψους:</strong> Τα συνολικά διάκενα/αέρηδες (${totalGaps}mm) υπερβαίνουν το εσωτερικό ύψος του κουτιού (${inH}mm).`);
+    } else if (dH <= 0) {
+      errHeight = true;
+      drawerWarnings.push(`⚠️ <strong>Σφάλμα Ύψους:</strong> Το διαθέσιμο ύψος ανά συρτάρι προκύπτει 0mm ή αρνητικό.`);
+    }
+
+    if (customBoxH > 0 && customBoxH > dH) {
+      errHeight = true;
+      drawerWarnings.push(`⚠️ <strong>Προειδοποίηση Ύψους:</strong> Το ύψος εσωτερικού κουτιού (${customBoxH}mm) υπερβαίνει το διαθέσιμο ύψος ανά συρτάρι (${dH}mm).`);
+    }
+
+    if (drawerWarnings.length > 0) {
+      $('drawer-warn').innerHTML = drawerWarnings.map(w => `<p>${w}</p>`).join('');
+      show('drawer-warn');
+    } else {
+      hide('drawer-warn');
+    }
 
     let frontW, frontH;
     if (frontType === 'overlay') {
@@ -1209,32 +1266,26 @@ function calculate() {
       frontH = dH - 2;
     }
 
-    // Υπολογισμός επίδρασης πάτου στο συνολικό ύψος κουτιού συρταριού
-    let effectiveBoxH = boxH;
     let botW_cut, botD_cut, botLabel;
-
     if (drawerBottomType === 'same') {
-      effectiveBoxH = boxH - t; // Αφαιρείται το πάχος της μελαμίνης για να διατηρηθεί το συνολικό ύψος boxH
-      botW_cut = drawerOuterW;   // Ίσο με τις εξωτερικές διαστάσεις συρταριού
+      botW_cut = drawerOuterW;
       botD_cut = dD;
-      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός εξωτερικά)`;
+      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός)`;
     } else if (drawerBottomType === '8mm') {
-      effectiveBoxH = boxH - 8;
-      botW_cut = drawerOuterW - 3; // 3mm μικρότερο από το συνολικό μήκος συρταριού
-      botD_cut = dD - 3;            // 3mm μικρότερο από το συνολικό βάθος/μήκος συρταριού
-      botLabel = `Πάτος συρταριού (8mm — Καρφωτός -3mm)`;
+      botW_cut = drawerOuterW - 8;
+      botD_cut = dD - 8;
+      botLabel = `Πάτος συρταριού (8mm — Καρφωτός -8mm)`;
     } else {
-      effectiveBoxH = boxH - 3;
-      botW_cut = drawerOuterW - 3; // 3mm μικρότερο από το συνολικό μήκος συρταριού
-      botD_cut = dD - 3;            // 3mm μικρότερο από το συνολικό βάθος/μήκος συρταριού
+      botW_cut = drawerOuterW - 3;
+      botD_cut = dD - 3;
       botLabel = `Πάτος συρταριού (3mm — Καρφωτός -3mm)`;
     }
 
     let drawerBody = '';
-    drawerBody += addCutItem('Μπροστινό(Φάτσα) συρταριού', frontW, frontH, cnt);
-    drawerBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, effectiveBoxH, cnt * 2);
-    drawerBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, effectiveBoxH, cnt * 2);
-    drawerBody += addCutItem(botLabel, botW_cut, botD_cut, cnt);
+    drawerBody += addCutItem('Μπροστινό(ΦΑΤΣΑ) Συρταριού', frontW, frontH, cnt, errHeight);
+    drawerBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, boxH, cnt * 2, errDepth || errHeight);
+    drawerBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, boxH, cnt * 2, errWidth || errHeight);
+    drawerBody += addCutItem(botLabel, botW_cut, botD_cut, cnt, errDepth || errWidth);
 
     $('drawer-result-body').innerHTML = drawerBody;
 
@@ -1246,7 +1297,7 @@ function calculate() {
       <p class="big">📦 Λεπτομέρειες συρταριών (${cnt} τεμ.)</p>
       <p>Μπροστινό πρόσωπο: <strong>${frontW} × ${frontH} mm</strong></p>
       <p>Εξωτερικό κουτί συρταριού: <strong>${drawerOuterW} × ${boxH} × ${dD} mm</strong></p>
-      <p>Ύψος πλαϊνών συρταριού: <strong>${effectiveBoxH} mm</strong> &nbsp;|&nbsp; Πάτος: <strong>${drawerBottomType === 'same' ? 'Μελαμίνη ' + t + 'mm (' + drawerOuterW + '×' + dD + 'mm)' : drawerBottomType + ' (' + botW_cut + '×' + botD_cut + 'mm)'}</strong></p>
+      <p>Εσωτερικό πλάτος κουτιού (Μπρος/Πίσω κομμάτια): <strong>${boxInnerW} mm</strong> (αφαιρέθηκε 2×${t}mm πάχος)</p>
       <p>${guideNote}</p>`;
 
     show('drawer-results-card');
@@ -1261,6 +1312,7 @@ function calculate() {
     show('door-results-card');
     hide('drawer-results-card');
     hide('drawer-summary');
+    hide('drawer-warn');
     hide('door-warn');
   } else if (boxType === 'door2') {
     const gFrame = val('door-gap-frame') || 2;
@@ -1274,9 +1326,11 @@ function calculate() {
     show('door-warn');
     hide('drawer-results-card');
     hide('drawer-summary');
+    hide('drawer-warn');
   } else {
     hide('drawer-results-card');
     hide('drawer-summary');
+    hide('drawer-warn');
     hide('door-results-card');
     hide('door-warn');
   }
@@ -1312,40 +1366,33 @@ function calculateWall() {
   const inW = unitW - 2 * t;
   const inH = H - 2 * t;
 
-  let effectiveD = D;
-  let backW_cut, backH_cut, backLabel;
-
-  if (wBackType === 'same') {
-    effectiveD = D - t;
-    backW_cut = unitW;
-    backH_cut = H;
-    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή εξωτερικά)`;
-  } else if (wBackType === '8mm') {
-    effectiveD = D - 8;
-    backW_cut = unitW - 3;
-    backH_cut = H - 3;
-    backLabel = `Πλάτη (8mm — Καρφωτή)`;
-  } else {
-    effectiveD = D - 3;
-    backW_cut = unitW - 3;
-    backH_cut = H - 3;
-    backLabel = `Πλάτη (3mm — Καρφωτή)`;
-  }
-
   let topD_cut, sideH_cut;
   if (wj === 'top') {
-    topD_cut = effectiveD;
+    topD_cut = D;
     sideH_cut = H - 2 * t;
   } else {
-    topD_cut = effectiveD - 2 * t;
+    topD_cut = D - 2 * t;
     sideH_cut = H;
+  }
+
+  let backW_cut, backH_cut, backLabel;
+  if (wBackType === 'same') {
+    backW_cut = unitW;
+    backH_cut = H;
+    backLabel = `Πλάτη (Μελαμίνη ${t}mm — Βιδωτή)`;
+  } else {
+    backW_cut = unitW - 3;
+    backH_cut = H - 3;
+    backLabel = `Πλάτη (${wBackType} — Καρφωτή)`;
   }
 
   let cutsBody = '';
   cutsBody += addCutItem('Πάνελ πάνω', unitW, topD_cut, 1 * n);
   cutsBody += addCutItem('Πάνελ κάτω', unitW, topD_cut, 1 * n);
-  cutsBody += addCutItem('Πλαϊνό', effectiveD, sideH_cut, 2 * n);
+  cutsBody += addCutItem('Πλαϊνό', D, sideH_cut, 2 * n);
   cutsBody += addCutItem(backLabel, backW_cut, backH_cut, 1 * n);
+
+  let wallWarnings = [];
 
   if (wbt === 'door1') {
     const dW = inW - 4, dH = inH - 4;
@@ -1362,32 +1409,39 @@ function calculateWall() {
     const drawerOuterW = guideType === 'side' ? inW - 2 * guideTh : inW;
     const boxInnerW = drawerOuterW - 2 * t;
     const dH = Math.floor((inH - 5 - (cnt-1)*3 - 5) / cnt);
-    const dD = effectiveD - 40;
+    const dD = D - 40;
 
-    let wEffectiveBoxH = dH;
+    let errDepth = false;
+    let errWidth = false;
+
+    if (dD >= D) {
+      errDepth = true;
+      wallWarnings.push(`⚠️ Το βάθος συρταριού (${dD}mm) υπερβαίνει το βάθος του κουτιού (${D}mm).`);
+    }
+    if (guideType === 'side' && (guideTh * 2) >= inW) {
+      errWidth = true;
+      wallWarnings.push(`⚠️ Το πάχος των οδηγών υπερβαίνει το εσωτερικό πλάτος του κουτιού.`);
+    }
+
     let botW_cut, botD_cut, botLabel;
-
     if (wBotType === 'same') {
-      wEffectiveBoxH = dH - t;
       botW_cut = drawerOuterW;
       botD_cut = dD;
-      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός εξωτερικά)`;
+      botLabel = `Πάτος συρταριού (Μελαμίνη ${t}mm — Βιδωτός)`;
     } else if (wBotType === '8mm') {
-      wEffectiveBoxH = dH - 8;
-      botW_cut = drawerOuterW - 3;
-      botD_cut = dD - 3;
-      botLabel = `Πάτος συρταριού (8mm — Καρφωτός -3mm)`;
+      botW_cut = drawerOuterW - 8;
+      botD_cut = dD - 8;
+      botLabel = `Πάτος συρταριού (8mm — Καρφωτός -8mm)`;
     } else {
-      wEffectiveBoxH = dH - 3;
       botW_cut = drawerOuterW - 3;
       botD_cut = dD - 3;
       botLabel = `Πάτος συρταριού (3mm — Καρφωτός -3mm)`;
     }
 
-    cutsBody += addCutItem('Μπροστινό(Φάτσα) συρταριού', inW - 2, dH, cnt * n);
-    cutsBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, wEffectiveBoxH, cnt * 2 * n);
-    cutsBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, wEffectiveBoxH, cnt * 2 * n);
-    cutsBody += addCutItem(botLabel, botW_cut, botD_cut, cnt * n);
+    cutsBody += addCutItem('Μπροστινό(ΦΑΤΣΑ) συρταριού (Φατνίο)', inW - 2, dH, cnt * n);
+    cutsBody += addCutItem('Πλαϊνό κουτιού συρταριού (Βάθος)', dD, dH, cnt * 2 * n, errDepth);
+    cutsBody += addCutItem('Μπροστινό & Πίσω κουτιού (Μέσα από πλαϊνά)', boxInnerW, dH, cnt * 2 * n, errWidth);
+    cutsBody += addCutItem(botLabel, botW_cut, botD_cut, cnt * n, errDepth || errWidth);
   }
 
   $('wall-cuts-body').innerHTML = cutsBody;
@@ -1395,12 +1449,16 @@ function calculateWall() {
 
   $('wall-summary').innerHTML = `
     <p class="big">✅ Σύνοψη: ${n} ντουλάπια × (${unitW} × ${H} × ${D} mm), πάχος ${t}mm</p>
-    <p>Εσωτερικό: <strong>${inW} mm</strong> πλάτος × <strong>${inH} mm</strong> ύψος &nbsp;|&nbsp; Βάθος σκελετού: <strong>${effectiveD} mm</strong></p>
-    <p>Σύνδεση: <strong>${wj === 'top' ? 'Πάνω/Κάτω over πλαϊνά' : 'Πλαϊνά over πάνω/κάτω'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${wBackType === 'same' ? 'Μελαμίνη (Βιδωτή εξωτερικά ' + unitW + '×' + H + 'mm)' : wBackType + ' (Καρφωτή -3mm ' + backW_cut + '×' + backH_cut + 'mm)'}</strong></p>`;
+    <p>Εσωτερικό: <strong>${inW} mm</strong> πλάτος × <strong>${inH} mm</strong> ύψος × <strong>${D} mm</strong> βάθος</p>
+    <p>Σύνδεση: <strong>${wj === 'top' ? 'Πάνω/Κάτω over πλαϊνά' : 'Πλαϊνά over πάνω/κάτω'}</strong> &nbsp;|&nbsp; Πλάτη: <strong>${wBackType === 'same' ? 'Μελαμίνη (Εξωτερική βιδωτή)' : wBackType + ' (Καρφωτή -3mm)'}</strong></p>`;
   show('wall-summary');
 
   if (remainder > 30) {
-    $('wall-warn').innerHTML = `<p>⚠️ Απομένουν <strong>${remainder} mm</strong>. Εξέτασε αν αξίζει ένα προσαρμοσμένο ντουλάπι <strong>${remainder} mm</strong> ή νέα κατανομή.</p>`;
+    wallWarnings.push(`⚠️ Απομένουν <strong>${remainder} mm</strong>. Εξέτασε αν αξίζει ένα προσαρμοσμένο ντουλάπι <strong>${remainder} mm</strong> ή νέα κατανομή.`);
+  }
+
+  if (wallWarnings.length > 0) {
+    $('wall-warn').innerHTML = wallWarnings.map(w => `<p>${w}</p>`).join('');
     show('wall-warn');
   } else {
     hide('wall-warn');
@@ -1417,7 +1475,8 @@ function openPrintModal() {
   // 1. Γέμισμα Αναλυτικής Λίστας
   let detailedHTML = '';
   currentCutList.forEach((item, index) => {
-    detailedHTML += `<tr>
+    const cls = item.isErr ? ' class="err-row"' : '';
+    detailedHTML += `<tr${cls}>
       <td>${item.name}</td>
       <td><span class="dim">${item.l}</span></td>
       <td><span class="dim">${item.h}</span></td>
@@ -1430,14 +1489,15 @@ function openPrintModal() {
   });
   $('modal-detailed-body').innerHTML = detailedHTML;
 
-  // 2. Γέμισμα Συγκεντρωτικής Λίστας (Ομαδοποίηση κατά διαστάσεις: Μήκος × Ύψος)
+  // 2. Γέμισμα Συγκεντρωτικής Λίστας
   const aggregatedMap = {};
   currentCutList.forEach(item => {
     const key = `${item.l} × ${item.h}`;
     if (!aggregatedMap[key]) {
-      aggregatedMap[key] = { totalQty: 0, items: [] };
+      aggregatedMap[key] = { totalQty: 0, items: [], isErr: false };
     }
     aggregatedMap[key].totalQty += item.qty;
+    if (item.isErr) aggregatedMap[key].isErr = true;
     if (!aggregatedMap[key].items.includes(item.name)) {
       aggregatedMap[key].items.push(item.name);
     }
@@ -1446,7 +1506,8 @@ function openPrintModal() {
   let aggregatedHTML = '';
   Object.keys(aggregatedMap).forEach(key => {
     const data = aggregatedMap[key];
-    aggregatedHTML += `<tr>
+    const cls = data.isErr ? ' class="err-row"' : '';
+    aggregatedHTML += `<tr${cls}>
       <td><span class="dim">${key} mm</span></td>
       <td><span class="qty-badge" style="background:var(--success-bg); color:var(--success); border-color:var(--success-border);">${data.totalQty}×</span></td>
       <td>${data.items.join(', ')}</td>
